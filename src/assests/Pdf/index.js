@@ -1,0 +1,1 @@
+export { default as Resume } from './Sagar_Resume.pdf';
