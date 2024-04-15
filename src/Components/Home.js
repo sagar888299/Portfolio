@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import emailjs from "@emailjs/browser";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Boy,
   Css,
@@ -16,7 +18,7 @@ import {
 } from "../assests/Images/index";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Resume } from "../assests/Pdf";
+import { Resume ,SagarResume} from "../assests/Pdf";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -59,7 +61,17 @@ const Home = () => {
   console.log(contactRef, "===>");
   useEffect(() => emailjs.init("kYtohPURh0yVs_V0-"), []);
   const handleSubmit = (values) => {
-    console.log(form);
+    toast.dismiss();
+
+  // Show waiting message toast
+  const waitingToastId = toast.info("Sending message...", {
+    autoClose: false, // Don't automatically close the toast
+    hideProgressBar: true,
+    closeOnClick: false,
+    pauseOnHover: false,
+    draggable: false,
+  });
+  
     emailjs
       .send(
         "service_uld69ej",
@@ -70,17 +82,35 @@ const Home = () => {
       .then(
         (result) => {
           console.log(result);
+          toast.dismiss(waitingToastId);
+        
+          // Show success toast
+          toast.success("Message Sent", {
+            autoClose: 3000, // 3 seconds
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
         },
         (error) => {
-          console.log(error, "error occured");
+          console.log(error, "error occurred");
+          toast.dismiss(waitingToastId);
+          toast.error("Some error occurred", {
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
         }
       );
   };
+  
 
   const handleResumeDownload = () => {
     const link = document.createElement("a");
     link.download = "Sagar_Resume";
-    link.href = Resume;
+    link.href = SagarResume;
     link.click();
   };
 
@@ -110,6 +140,7 @@ const Home = () => {
 
   return (
     <>
+    <ToastContainer />
       <nav className="flex justify-between p-10 h-20">
         <div>
           <img src={logo} alt="logo" className="cursor-pointer" />
